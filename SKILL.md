@@ -1,5 +1,7 @@
 ---
 name: prototype-to-frontend
+slug: prototype-to-frontend
+displayName: prototype-to-frontend
 version: 0.5.0
 description: >
   从设计原型生成可运行的前端真实代码。两种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
