@@ -2,7 +2,7 @@
 name: prototype-to-frontend
 slug: prototype-to-frontend
 displayName: prototype-to-frontend
-version: 0.5.0
+version: 0.6.0
 description: >
   从设计原型生成可运行的前端真实代码。两种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
   节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 pencil-designer
@@ -10,8 +10,8 @@ description: >
   与页面范围——目标位置已有项目时自动探测并沿用其规范，新项目按场景给出选型推荐；参考项目支持
   本地索引清单 + 运行时指定。目标项目与参考项目均支持 GitLab 等远程仓库：克隆到本地学习规范或
   直接在代码库上调整，在特性分支上生成，验证通过后经用户确认提交/推送/建 MR。可选流程：从设计
-  意图反推生成接口调用方式（api 函数 + 调用文档），用户提供 Apifox 等 API 管理工具时生成 OpenAPI
-  规范并导入。生成后执行浏览器级
+  意图反推生成接口调用方式（api 函数 + 调用文档），对接 Apifox/YApi/PingCode/Swagger 等 API 工具时
+  生成 OpenAPI 规范并导入。生成后执行浏览器级
   验证：build/lint 通过 → dev server 启动 → Playwright 逐页截图与原型基线对比 → 不一致自动修复
   （默认最多 2 轮）→ 最终截图展示给用户。用户提到 .pen 转代码、原型转前端、原型生成代码、根据
   PRD 生成页面、HTML 原型变真实项目、设计稿出前端代码、在 GitLab/远程仓库上生成或调整前端代码、
@@ -175,7 +175,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 1. 接口清单从设计意图的 fields/interactions **反推**（method/path/请求响应结构），不臆造字段
 2. 生成 `src/api/` 调用函数（沿用目标/参考项目的请求层模式）+ TS 类型 + mock 切换点，以及 `docs/api-usage.md`（每接口的用途、签名、参数表、页面调用示例）
-3. 用户提供了 Apifox 等 API 管理工具时：生成 OpenAPI 3.1 规范文件并导入工具（探测工具的 MCP/CLI/导入入口）；导入不可行则落盘 `openapi.json` 并给出手动导入步骤，不阻塞交付
+3. 用户提供了 API 管理工具时：以 OpenAPI 3.1 为事实源，按工具导入——支持 **Apifox**（MCP/开放 API）、**YApi**（Swagger 通道或 /api/open/ 脚本化）、**PingCode**（知识库页面/Markdown 交付，无原生导入）、**Swagger 工具链**（直接消费 + 规范校验）；任一工具导入不可行则落盘 `openapi.json` 并给手动导入步骤，不阻塞交付
 
 ## 6. 浏览器级验证
 

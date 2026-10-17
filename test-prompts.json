@@ -17,6 +17,6 @@
   {
     "id": 4,
     "prompt": "按这个 PRD 和原型把前端生成出来，另外把接口调用方式也生成一下，我们有 Apifox，项目 ID 是 12345",
-    "expected": "正常生成流程 + 触发可选 §5.5：从 fields/interactions 反推接口清单（不臆造）→src/api/ 调用函数与 docs/api-usage.md→生成 openapi.json→探测 Apifox 接入方式（MCP/CLI/手动）导入；导入不可行则落盘并给手动导入步骤，不阻塞交付"
+    "expected": "正常生成流程 + 触发可选 §5.5：从 fields/interactions 反推接口清单（不臆造）→src/api/ 调用函数与 docs/api-usage.md→生成 openapi.json（事实源）→按工具矩阵导入：Apifox（MCP/CLI/token 探测）、YApi（Swagger 通道或 /api/open/ 脚本化）、PingCode（知识库/Markdown 交付）、Swagger 工具链（直接消费+validate）；导入不可行则落盘并给手动导入步骤，不阻塞交付"
   }
 ]

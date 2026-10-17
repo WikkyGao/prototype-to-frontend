@@ -4,7 +4,7 @@
 
 1. **接口从设计意图反推**——fields 定请求/响应结构，interactions 定接口行为；原型和 PRD 都没写的接口不生成
 2. **mock 先行**——真实后端就绪前不阻塞前端，每个调用函数留明确的切换点
-3. **不绑定单一工具**——对外产物统一走 OpenAPI 3.1（Apifox/Swagger/Postman/YApi 都能导入）
+3. **不绑定单一工具**——对外产物统一走 OpenAPI 3.1（单一事实源），Apifox/YApi/PingCode/Swagger 工具链都能接
 
 ## 1. 接口清单反推
 
@@ -44,26 +44,39 @@ const { list, total } = await fetchDevices({ keyword, status, page: 1, pageSize:
 ```
 ```
 
-## 3. Apifox 等 API 工具对接（用户提供了工具才执行）
+## 3. API 工具对接（用户提供了工具才执行）
 
-统一策略：**生成 OpenAPI 3.1 → 导入工具**，不直接调各家私有 API。
+统一策略：**生成 OpenAPI 3.1 → 按工具导入**，不直接依赖各工具的私有写接口。
 
-1. **探测接入方式**（按优先级）：
-   - 运行时已挂载该工具的 MCP 工具（如 `mcp__apifox__*`）→ 优先用其"导入 OpenAPI / 创建接口"能力
-   - 用户给了 CLI / 项目 ID + token → 按工具的导入入口执行
-   - 只有工具名没有凭据 → 引导用户补齐（项目 ID、token 或 MCP 配置）；用户拒绝则走第 4 步落盘
-2. **生成 `openapi.json`**：
-   - `info`：title 用项目名，version 对齐 PRD 版本；`servers` 填占位（如 `http://localhost:<mock端口>`）并注明
-   - `paths`：第 1 节接口清单逐条落；`components.schemas`：复用第 2 节 TS 类型转 schema
-   - 描述字段写中文字段说明（来自 PRD/原型的 label），便于在工具里直接读
-3. **导入**：执行导入 → 把工具返回的接口列表/链接回给用户；导入报错 → 按报错修正 schema 重试一次
-4. **兜底**：工具不可用/导入两次失败 → `openapi.json` 落盘到项目根（或用户指定处），附 Apifox（项目设置 → 数据导入 → OpenAPI/Swagger）等工具的手动导入步骤，**不阻塞交付**
+**通用兜底**：任何工具探测失败、凭据缺失或导入两次失败 → `openapi.json` 落盘（项目根或用户指定处）+ 该工具的手动导入步骤，**不阻塞交付**。
+
+| 工具 | 探测（按优先级） | 导入方式 | 手动导入路径 |
+|---|---|---|---|
+| **Apifox** | 运行时 `mcp__apifox__*` MCP → CLI → 项目 ID + token | MCP 或开放 API 导入 OpenAPI | 项目设置 → 数据导入 → OpenAPI/Swagger |
+| **YApi**（自建实例） | 实例 URL + 项目 token（项目设置 → token 配置） | ① 数据导入 Swagger 通道：**旧版仅支持 Swagger 2.0**，用 `api-spec-converter`（`-f openapi_v3 -t swagger_2`）降版本后导入；② 脚本化：项目 token 调 `/api/open/` 开放接口（如 interface/add）逐条创建——端点与能力以所在实例的版本文档为准，不臆造 | 数据管理 → 数据导入 → Swagger |
+| **PingCode** | 租户开放平台凭据（企业后台凭据管理拿 client_id/secret → 换 Bearer token） | **无原生 OpenAPI 导入**：把 `docs/api-usage.md` 写入其知识库页面（Wiki/Pages API，以租户实际开放的资源范围为准），或作为 Markdown 交付物挂到相关工作项 | 直接交付 api-usage.md + openapi.json |
+| **Swagger 工具链** | 无需凭据 | `openapi.json` 直接在 Swagger Editor/UI 打开（OpenAPI 3.1 原生支持）；交付前跑 `npx @apidevtools/swagger-cli validate openapi.json` 校验规范合法性 | [editor.swagger.io](https://editor.swagger.io) 导入文件 |
+
+注意事项：
+
+- **版本降级只在工具需要时做**（YApi 旧版等），转换后的 Swagger 2.0 文件另存（如 `openapi-v2.json`），不覆盖 3.1 事实源
+- PingCode 写入知识库前先确认租户开放范围里有 Wiki/Pages 资源；没有就诚实降级为 Markdown 交付，不硬调未确认的端点
+- 用户给了工具名但没给凭据 → 引导补齐一次；拒绝 → 直接走通用兜底
+
+### 3.1 生成 openapi.json（所有工具共用的事实源）
+
+- `info`：title 用项目名，version 对齐 PRD 版本；`servers` 填占位（如 `http://localhost:<dev端口>/api`）并注明是占位
+- `paths`：第 1 节接口清单逐条落；`components.schemas`：复用第 2 节 TS 类型转 schema
+- 描述字段写中文字段说明（来自 PRD/原型的 label），便于在工具里直接读
+- 交付前跑 `npx @apidevtools/swagger-cli validate` 校验
 
 ## 4. 边界
 
 | 情况 | 处理 |
 |---|---|
 | 原型纯视觉、无字段来源 | 降级：只生成页面调用骨架，接口清单整表进待确认 |
-| Apifox token/项目 ID 缺失 | 引导补齐；拒绝则走 openapi.json 落盘 |
+| 工具凭据缺失（Apifox token、YApi token、PingCode client_id/secret 等） | 引导补齐一次；拒绝则走 openapi.json 落盘 + 手动导入步骤 |
 | OpenAPI 结构校验失败 | 对照错误修正；复现不了的最小合法结构先出，异常字段标 TODO |
+| YApi 实例不接受 OpenAPI 3.x | `api-spec-converter` 降级 Swagger 2.0 另存（不覆盖 3.1 事实源）再导入 |
+| PingCode 租户无 Wiki/Pages 开放资源 | 诚实降级为 Markdown 交付，不硬调未确认端点 |
 | 用户只要接口文档不要代码 | 只出 openapi.json + api-usage.md，不动 src/ |
