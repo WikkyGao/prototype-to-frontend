@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "prompt": "这是我们产品的 PRD.md 和设计导出的可交互原型 prototype-output/，帮我生成真实的前端项目",
+    "expected": "方式2路由：解析PRD+原型出页面清单→用户圈选页面并澄清模糊字段（数据契约/视觉示意分级）→AskUserQuestion确认目标位置/技术栈（新项目给场景化推荐）/规范/参考项目→脚手架生成（含 tokens.json/variables.css/design.md 规范文档）→build+分级截图对比验证→交付总结与截图"
+  },
+  {
+    "id": 2,
+    "prompt": "把 design.pen 这个设计稿转成我们现有 Vue3 项目里的页面，项目就在当前目录",
+    "expected": "方式1路由：pen CLI环境校验→MCP读取节点树/context/变量并TakeScreenshot基线→探测当前目录已有Vue3项目规范（含 design.md/variables.css/tokens.json 等规范文档检查）→确认融入而非另起脚手架→按既有路由/UI库写页面→浏览器级验证"
+  },
+  {
+    "id": 3,
+    "prompt": "参考 gitlab.mycompany.com/team/admin 仓库的代码风格，把这个原型的用户管理页面加到那个仓库里",
+    "expected": "远程双场景：认证检测→完整克隆目标仓库并默认切特性分支（用户显式指定分支可让渡，push/强推红线不可覆盖）→参考学习→monorepo前端根定位→融入生成→验证→git收尾逐步确认commit/push/MR"
+  },
+  {
+    "id": 4,
+    "prompt": "按这个 PRD 和原型把前端生成出来，另外把接口调用方式也生成一下，我们有 Apifox，项目 ID 是 12345",
+    "expected": "正常生成流程 + 触发可选 §5.5：从 fields/interactions 反推接口清单（不臆造）→src/api/ 调用函数与 docs/api-usage.md→生成 openapi.json→探测 Apifox 接入方式（MCP/CLI/手动）导入；导入不可行则落盘并给手动导入步骤，不阻塞交付"
+  }
+]
