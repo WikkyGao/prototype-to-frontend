@@ -2,12 +2,12 @@
   {
     "id": 1,
     "prompt": "这是我们产品的 PRD.md 和设计导出的可交互原型 prototype-output/，帮我生成真实的前端项目",
-    "expected": "方式2路由：解析PRD+原型出页面清单→用户圈选页面并澄清模糊字段（数据契约/视觉示意分级）→AskUserQuestion确认目标位置/技术栈（新项目给场景化推荐）/规范/参考项目→脚手架生成（含 tokens.json/variables.css/design.md 规范文档）→build+分级截图对比验证→交付总结与截图"
+    "expected": "方式2路由：解析PRD+原型出页面清单→用户圈选页面并澄清模糊字段（数据契约/视觉示意分级）→AskUserQuestion确认目标位置/技术栈（新项目给场景化推荐）/规范/参考项目→规范三件套缺失时先出「令牌方案表」（基线截图取样）给用户确认样式→脚手架生成（tokens.json/variables.css/design.md 按确认方案落盘）→build+分级截图对比验证→交付总结与截图"
   },
   {
     "id": 2,
     "prompt": "把 design.pen 这个设计稿转成我们现有 Vue3 项目里的页面，项目就在当前目录",
-    "expected": "方式1路由：pen CLI环境校验→MCP读取节点树/context/变量并TakeScreenshot基线→探测当前目录已有Vue3项目规范（含 design.md/variables.css/tokens.json 等规范文档检查）→确认融入而非另起脚手架→按既有路由/UI库写页面→浏览器级验证"
+    "expected": "方式1路由：pen CLI环境校验→MCP读取节点树/context/变量并TakeScreenshot基线→探测当前目录已有Vue3项目规范（含 design.md/variables.css/tokens.json 等规范文档检查；缺失时先出「令牌方案表」确认样式再生成）→确认融入而非另起脚手架→按既有路由/UI库写页面→浏览器级验证"
   },
   {
     "id": 3,

@@ -2,7 +2,7 @@
 name: prototype-to-frontend
 slug: prototype-to-frontend
 displayName: prototype-to-frontend
-version: 0.7.1
+version: 0.8.0
 description: >
   从设计原型生成可运行的前端真实代码。四种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
   节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 pencil-designer
@@ -98,7 +98,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 | 级别 | 判定 | 阵型 |
 |---|---|---|
-| 小任务 | 向**已有项目**融入 ≤2 个页面/局部组件，不动脚手架与全局配置 | 两轮并一轮：解析摘要+页面圈选+数据契约类待确认项一条消息给出，再用一次选择题式提问收齐剩余决策（无歧义时只剩目标位置与路由确认）；跳过参考项目询问（以目标项目自身规范为准） |
+| 小任务 | 向**已有项目**融入 ≤2 个页面/局部组件，不动脚手架与全局配置 | 两轮并一轮：解析摘要+页面圈选+数据契约类待确认项一条消息给出，再用一次选择题式提问收齐剩余决策（无歧义时只剩目标位置与路由确认；**目标项目缺令牌文档时，令牌方案确认并入该次提问**）；跳过参考项目询问（以目标项目自身规范为准） |
 | 增量任务 | 目标项目此前已由本技能生成过（发现生成痕迹：路由注册注释、PENDING-QUESTIONS/交付文档，或用户说明"之前生成过"） | 技术栈/规范/参考项目**沿用上次已确认结果，不重问**；只确认本次页面范围与新增待确认项；生成前重读项目当前状态（可能已有变化） |
 | 标准任务 | 其余（新项目、多页面、该项目首次生成） | 完整两轮（3.1 → 3.2） |
 
@@ -121,7 +121,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 先确定目标位置。用户给的是仓库地址（GitLab/GitHub/自建 git 远程）时，按 [references/remote-repos.md](references/remote-repos.md) 检测认证并完整克隆到本地（默认当前工作目录下、切特性分支），之后把克隆目录当"用户指定目录"走同样探测；本地路径则直接探测目标目录：
 
-- **已有前端项目**（存在 `package.json`）：读 `package.json`、lockfile、eslint/prettier 配置、`src/` 结构、路由注册方式、2-3 个现有组件、**规范文档**（`design.md`、`variables.css`、`tokens.json`、`theme.ts`、`tailwind.config.*` 等——命中则设计令牌以文档为准，缺失则在摘要标注"无令牌文档，令牌需截图取样"），生成「探测到的规范摘要」（框架、UI 库、样式方案、状态管理、请求层、命名习惯、设计令牌来源）。
+- **已有前端项目**（存在 `package.json`）：读 `package.json`、lockfile、eslint/prettier 配置、`src/` 结构、路由注册方式、2-3 个现有组件、**规范文档**（`design.md`、`variables.css`、`tokens.json`、`theme.ts`、`tailwind.config.*` 等——命中则设计令牌以文档为准；**三件套缺失则触发下方令牌方案确认**），生成「探测到的规范摘要」（框架、UI 库、样式方案、状态管理、请求层、命名习惯、设计令牌来源）。
 - **空目录/新项目**：读 [references/stack-recommendations.md](references/stack-recommendations.md) 按场景准备推荐。
 
 然后用选择题式提问一次收齐（只问探测不到的）。工具名随 Agent 而异：Claude Code/ZCode 为 AskUserQuestion，其他 Agent 用等价的选项提问能力，最差用文本列表让用户回复序号：
@@ -134,6 +134,13 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 | 参考项目 | 索引清单命中的仓库 / 无 / 用户另给路径 | 同左，新项目参考价值更大 |
 
 参考项目部分按 [references/reference-projects.md](references/reference-projects.md) 执行：先查 `~/.prototype-to-frontend/projects.json` 索引，没有命中再问；用户给了新仓库，学习完把规范摘要回写索引，下次不用重复读。参考项目支持本地路径和 GitLab 等远程仓库 URL——远程仓库浅克隆进缓存后学习，索引条目记录 `remote`/`cachePath`。
+
+**令牌方案确认（规范三件套缺失时必做，生成前给用户过目样式）**：目标项目/新项目均无 `design.md`、`variables.css`、`tokens.json` 时，从基线截图取样产出「令牌方案表」，随 3.2 确认轮一起给用户确认后才落盘生成——
+
+- **取样方法**：Read 基线截图，逐项取值：主色（主按钮/品牌强调区取样 hex）、页面背景、正文与次级文字、卡片圆角观感、字体栈；无截图依据的项用 UI 库默认值并在表内标注
+- **方案表示例**（随确认轮展示，用户可直接改值）：`主色 #0f766e（原型主按钮取样）｜背景 #f4f6f8｜正文 #1f2937｜圆角 8px｜字体 PingFang SC 栈｜圆角/间距沿用 UI 库默认`
+- **确认选项**：① 按取样方案生成（推荐）② 用户提供品牌规范（直接给值替换）③ 沿用 UI 库默认、不建令牌文档（探测摘要标注"无令牌文档"）
+- 确认结果写入设计意图 `tokens`；生成阶段按 §5 据此落盘，未确认不得生成三件套
 
 **红线**：不得跳过确认直接生成；不得连环多轮盘问（按 3.0 阵型问完即开工，生成中遇到小决策自行按规范摘要拍板并在交付时说明）。
 
@@ -153,11 +160,12 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 1. 安装依赖（按 lockfile 优先级选包管理器：pnpm > yarn > npm）
 2. 按参考项目规范摘要调整目录结构（`src/api`、`src/components`、`src/pages|views`、`src/router`、`src/types`、`src/mocks`）
-3. 落设计令牌并产出规范文档：Tailwind 方案进 `tailwind.config` 扩展；CSS 方案进 `src/styles/variables.css`；两种方案统一附机器可读 `src/styles/tokens.json` 与 `docs/design.md`（令牌取值与使用说明）——让下一个项目探测时有文档可依，形成闭环
+3. 落设计令牌并产出规范文档：Tailwind 方案进 `tailwind.config` 扩展；CSS 方案进 `src/styles/variables.css`；两种方案统一附机器可读 `src/styles/tokens.json` 与 `docs/design.md`（令牌取值与使用说明）——**取值以 Step 3.2 用户确认的令牌方案为准**；让下一个项目探测时有文档可依，形成闭环
 4. 配置 lint（沿用参考项目的规则集，没有则用各框架官方推荐）
 
 ### 5.2 已有项目：融入（本地已有或从远程克隆）
 
+- **规范三件套生成（仅当用户在 3.2 确认）**：目标项目缺 `design.md`/`variables.css`/`tokens.json` 且用户选择"按确认方案生成"时，以**新增文件**方式落盘（路径沿用目标项目目录约定，如 `src/styles/` + `docs/`），不改动既有主题/样式文件；用户选"沿用 UI 库默认"则不生成，探测摘要标注"无令牌文档"
 - 路由按目标项目既有方式注册（读它的 router 文件照抄模式）
 - 页面/组件放进既有目录结构，**复用**它已装的 UI 库和请求层，不引入新依赖（确有必要先说明理由并征得同意）
 - 公共组件（顶栏/侧栏）先查项目里有没有现成的，有就复用
