@@ -2,7 +2,7 @@
 
 > 本质约束（先读这个）：墨刀 MCP 是**生成型服务**（文本 → HTML/React/PRD），**没有节点树回读**——
 > 本技能不从墨刀"读已有设计"，而是消费它的**产物**。产物都是可交互 HTML，天然走方式2。
-> 写设计归 pencil-designer（其 references/modao-mcp.md 有墨刀 MCP 生成侧完整调研）。
+> 写设计归 pencil-designer（其文档 modao-mcp.md 有墨刀 MCP 生成侧完整调研）。
 
 ## 1. 三条入口（按用户拿着什么路由）
 
