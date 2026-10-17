@@ -75,7 +75,7 @@ Step 6 验证全部通过、交付总结展示后，目标为远程仓库时执�
 
 1. **展示改动**：`git status --short` + `git diff --stat`，逐组说明改了什么（新增页面/路由注册/公共组件/mock）
 2. **提交信息风格**：先看 `git log --oneline -10` 学仓库既有风格（conventional commits？中文？scope 用什么？），照抄格式，如 `feat(users): 从原型生成用户列表页`
-3. **AskUserQuestion 让用户选收尾方式**：
+3. **用选择题式提问让用户选收尾方式**：
    - 提交到特性分支（推荐）—— `git add <涉及文件>` + `git commit`
    - 提交并推送 —— 加 `git push -u origin <特性分支>`
    - 提交、推送并建 MR/PR —— 见下

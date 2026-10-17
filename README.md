@@ -1,8 +1,8 @@
 # prototype-to-frontend
 
-从设计原型生成可运行的前端真实代码，供 [ZCode](https://zcode.ai) / Agent Skills 体系使用。
+从设计原型生成可运行的前端真实代码。遵循 **Agent Skills 开放格式**（`SKILL.md` + frontmatter），可被主流编码 Agent 加载，已在下方兼容性表中列出验证过的技能目录。
 
-**版本**：v0.5.0 · **语言**：中文为主 · **安装位置**：`~/.agents/skills/prototype-to-frontend/`
+**版本**：v0.6.1 · **语言**：中文为主
 
 ## 它做什么
 
@@ -21,12 +21,29 @@
 - **浏览器级验证**：build/lint → dev server → Playwright 逐页截图 → 与基线并排目视对比（关键页全对比、长尾页验渲染）→ 最多 2 轮修复循环
 - **可选接口流程**：从设计意图反推接口清单，生成 api 调用层 + 调用文档 + OpenAPI 3.1（事实源），对接 **Apifox**（MCP/开放 API）、**YApi**（Swagger 通道或 /api/open/ 脚本化）、**PingCode**（知识库页面/Markdown 交付）、**Swagger 工具链**（直接消费 + 规范校验）
 
+## 兼容性
+
+本技能只用标准能力：文件读写、shell 命令（git/npm/npx/pen CLI）、HTTP、向用户提问。不依赖任何特定 Agent 的私有 API；`AskUserQuestion` 等工具名在文中仅作示例，其他 Agent 用等价提问能力即可。
+
+| Agent | 全局（用户级）目录 | 项目级目录 |
+|---|---|---|
+| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
+| OpenCode | `~/.config/opencode/skills/` | `.opencode/skills/` |
+| Codex CLI | `~/.codex/skills/` | `.codex/skills/` |
+| pi | `~/.pi/agent/skills/` | `.agents/skills/` |
+| ZCode | `~/.zcode/skills/` 或 `~/.agents/skills/` | `.zcode/skills/` 或 `.agents/skills/` |
+
+> 路径以各 Agent 当前文档为准（Agent Skills 格式已统一，目录约定各家仍有差异）。`~/.agents/skills/` 是 pi 与 ZCode 共同的原生路径，可作跨 Agent 公共落点，其余 Agent 用软链接入。
+
 ## 安装
 
 ```bash
-# 实体目录 + 软链（与常见技能布局一致）
+# 1) 克隆到跨 Agent 公共目录（pi、ZCode 原生识别）
 git clone https://github.com/WikkyGao/prototype-to-frontend.git ~/.agents/skills/prototype-to-frontend
-ln -sfn ../../.agents/skills/prototype-to-frontend ~/.zcode/skills/prototype-to-frontend
+
+# 2) 其他 Agent 软链接入（按上表按需执行）
+ln -sfn ~/.agents/skills/prototype-to-frontend ~/.claude/skills/prototype-to-frontend   # Claude Code
+ln -sfn ~/.agents/skills/prototype-to-frontend ~/.codex/skills/prototype-to-frontend    # Codex CLI
 ```
 
 依赖（按需）：Node ≥ 18、Playwright chromium（`npx playwright install chromium`）、pen CLI（方式1 需要）、`glab`/`gh`（远程仓库 MR 需要）。
@@ -56,11 +73,13 @@ prototype-to-frontend/
     └── verification.md         # 浏览器级验证与修复循环
 ```
 
-## 相关技能
+## 相关技能（作者同系列，可选）
 
-- [pencil-designer](https://github.com/) — .pen 设计文件的制作与修改（本技能只读不写设计）
-- prototypes-spec — 原型转开发文档（PRD/功能清单/测试用例）
-- darwin-skill — 技能评估与持续优化（本技能经其 8 维度 rubric 评估，full_test 85.8）
+未安装时不影响本技能主流程，相关引导会自动跳过。
+
+- **pencil-designer** — .pen 设计文件的制作与修改（本技能只读不写设计）
+- **prototypes-spec** — 原型转开发文档（PRD/功能清单/测试用例）
+- **darwin-skill** — 技能评估与持续优化（本技能经其 8 维度 rubric 评估，full_test 85.8）
 
 ## 许可
 

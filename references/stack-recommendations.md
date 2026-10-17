@@ -37,7 +37,7 @@
 - Mock：`src/mocks/` 下按模块的 ts 数据 + api 函数内 TODO 标注切换点，不引入重型 mock 框架（用户要求除外）
 - 包管理器：lockfile 优先（pnpm-lock → pnpm，yarn.lock → yarn，否则 npm）
 
-## 3. 推荐的呈现方式（AskUserQuestion）
+## 3. 推荐的呈现方式（选择题式提问）
 
 首选项 = 推荐项，带一句理由。示例（后台场景）：
 
