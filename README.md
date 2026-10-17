@@ -2,14 +2,16 @@
 
 从设计原型生成可运行的前端真实代码。遵循 **Agent Skills 开放格式**（`SKILL.md` + frontmatter），可被主流编码 Agent 加载，已在下方兼容性表中列出验证过的技能目录。
 
-**版本**：v0.6.1 · **语言**：中文为主
+**版本**：v0.7.0 · **语言**：中文为主
 
 ## 它做什么
 
-两种输入方式，统一产出「设计意图」后生成真实前端工程：
+四种输入方式，统一产出「设计意图」后生成真实前端工程：
 
 1. **`.pen` 设计文件**（pen.dev）—— 经 pen CLI 的 MCP 读取节点树、交互 context、设计变量，`TakeScreenshot` 出视觉基线
-2. **PRD + 可交互 HTML 原型** —— 支持 pencil-designer 导出的三栏原型、Axure 等通用原型目录；Playwright 渲染出基线截图
+2. **PRD + 可交互 HTML 原型** —— 支持 pencil-designer 导出的三栏原型、墨刀离线演示包、Axure 等通用原型目录；Playwright 渲染出基线截图
+3. **Figma 文件** —— MCP 读侧优先（`get_metadata`/`get_variable_defs`/`get_design_context`/`get_screenshot`），REST API 兜底；席位限流自动探测降级（只读，不写回）
+4. **墨刀（MockingBot）产物** —— 离线演示包 / 预览链接 / MCP 生成产物，均走方式2 通道
 
 ## 核心特性
 
@@ -72,6 +74,10 @@ prototype-to-frontend/
     ├── api-generation.md       # 可选接口流程与 Apifox/OpenAPI
     └── verification.md         # 浏览器级验证与修复循环
 ```
+
+## 路线图
+
+- **OpenDesign 支持（规划中）** —— 开源 Agent 驱动设计工作区；待明确其产物形态与本技能的分工后评估。当前若有 OpenDesign 产物，可导出 HTML 后走方式2。
 
 ## 相关技能（作者同系列，可选）
 

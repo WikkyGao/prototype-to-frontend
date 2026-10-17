@@ -2,11 +2,13 @@
 name: prototype-to-frontend
 slug: prototype-to-frontend
 displayName: prototype-to-frontend
-version: 0.6.1
+version: 0.7.0
 description: >
-  从设计原型生成可运行的前端真实代码。两种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
+  从设计原型生成可运行的前端真实代码。四种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
   节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 pencil-designer
-  导出的三栏原型、通用 HTML 原型目录）。生成前与用户确认目标位置、技术栈、代码规范、参考项目
+  导出的三栏原型、墨刀离线演示包、通用 HTML 原型目录）；③ Figma 文件（MCP 读侧优先、REST API
+  兜底，席位限流自动探测降级）；④ 墨刀产物（离线包/预览链接/MCP 生成产物，均走方式2 通道）。
+  生成前与用户确认目标位置、技术栈、代码规范、参考项目
   与页面范围——目标位置已有项目时自动探测并沿用其规范，新项目按场景给出选型推荐；参考项目支持
   本地索引清单 + 运行时指定。目标项目与参考项目均支持 GitLab 等远程仓库：克隆到本地学习规范或
   直接在代码库上调整，在特性分支上生成，验证通过后经用户确认提交/推送/建 MR。可选流程：从设计
@@ -57,7 +59,11 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 |---|---|
 | 给了 `.pen` 文件（或说"从设计稿/Pen 文件生成代码"） | 方式1，读 [references/pen-extraction.md](references/pen-extraction.md) 后执行 |
 | 给了 PRD（md 文件）+ HTML 原型（目录或单 html） | 方式2，读 [references/prototype-parsing.md](references/prototype-parsing.md) 后执行 |
+| 给了 Figma 链接 / token（或说"从 Figma 生成"） | 方式3，读 [references/figma-extraction.md](references/figma-extraction.md) 后执行（只读，席位限流先探测） |
+| 给了墨刀产物（离线演示包 / 预览链接 / MCP 生成产物） | 方式2 墨刀入口，读 [references/modao-extraction.md](references/modao-extraction.md) 后执行 |
+| 提到 OpenDesign | **暂不支持（规划中）**：告知可请其导出 HTML 后走方式2；路线图见 README |
 | `.pen` 和 PRD 都有 | 以 .pen 为视觉与结构准绳，PRD 只补充业务语义与字段 |
+| 多来源混合（如 Figma + PRD） | 视觉与结构以设计工具为准，PRD 补业务语义与字段，冲突进 ambiguous |
 | 什么都没给 | 在当前目录及上级找 `*.pen`、`PRD*.md`、原型 HTML 目录；找不到就问用户要路径，不要自行假设 |
 
 > `.pen` 文件是加密的，**禁止用 Read/Grep 直接读取**，只能走 pen.dev MCP（见方式1参考文档）。
@@ -82,7 +88,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 └── ambiguous         待确认项：原型/PRD 中模糊或缺失的字段与交互（每条标注级别：数据契约 / 视觉示意）
 ```
 
-解析时同步产出每页的**基线截图**：方式1 用 pen MCP 的 `TakeScreenshot`；方式2 用 Playwright 渲染原型页面截图（详见各自参考文档）。
+解析时同步产出每页的**基线截图**：方式1 用 pen MCP 的 `TakeScreenshot`；方式2 用 Playwright 渲染原型页面截图；方式3 用 Figma `get_screenshot` 或 REST images 端点；墨刀 preview link 用 Playwright 渲染（详见各自参考文档）。
 
 ## 3. 生成前确认（先分级定阵型，问完即开工）
 
@@ -225,7 +231,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 以下同系列技能为作者的其他作品，**未安装时相关引导自动跳过**，不影响主流程。
 
-- `pencil-designer`：负责**做设计**（创建/修改 .pen、导出原型 HTML）。本技能只**读** .pen 出代码，不做设计。用户要改设计时引导其使用 pencil-designer，改完再回来重新生成
+- `pencil-designer`：负责**做设计**（创建/修改 .pen、驱动 Figma/墨刀 MCP 的写侧、导出原型 HTML）。本技能只**读**设计出代码，不写回任何设计工具。用户要改设计时引导其使用 pencil-designer，改完再回来重新生成
 - `prototypes-spec`：把原型转**文档**（PRD/功能清单/测试用例）。本技能把原型转**代码**。用户同时要文档和代码时，可先跑 prototypes-spec 出 PRD，再以该 PRD + 原型走本技能方式2
 - `requirement-analysis`：需求澄清。本技能 Step 3.1 的待确认项如果太多（>10 条），建议用户先做需求澄清再生成
 
@@ -235,6 +241,8 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 |---|---|
 | [references/pen-extraction.md](references/pen-extraction.md) | 输入是 .pen 文件时（Step 1-2） |
 | [references/prototype-parsing.md](references/prototype-parsing.md) | 输入是 PRD+HTML 原型时（Step 1-2） |
+| [references/figma-extraction.md](references/figma-extraction.md) | 输入是 Figma 链接/token 时（Step 1-2；席位探测→MCP→REST→手动导出降级链） |
+| [references/modao-extraction.md](references/modao-extraction.md) | 输入是墨刀产物时（Step 1-2；离线包/生成产物/preview link 三入口） |
 | [references/stack-recommendations.md](references/stack-recommendations.md) | 新项目选型推荐时（Step 3.2） |
 | [references/reference-projects.md](references/reference-projects.md) | Step 3.2 参考项目询问、Step 4 学习提取 |
 | [references/remote-repos.md](references/remote-repos.md) | 目标或参考项目是 GitLab 等远程仓库时（Step 3.2 克隆、Step 4 场景A、Step 7 git 收尾） |
