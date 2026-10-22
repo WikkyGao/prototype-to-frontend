@@ -2,11 +2,11 @@
 name: prototype-to-frontend
 slug: prototype-to-frontend
 displayName: prototype-to-frontend
-version: 0.8.1
+version: 0.9.0
 description: >
   从设计原型生成可运行的前端真实代码。四种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
-  节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 pencil-designer
-  导出的三栏原型、墨刀离线演示包、通用 HTML 原型目录）；③ Figma 文件（MCP 读侧优先、REST API
+  节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 prototype-designer
+  导出的三栏原型与内嵌 `#prototype-manifest`、墨刀离线演示包、通用 HTML 原型目录）；③ Figma 文件（MCP 读侧优先、REST API
   兜底，席位限流自动探测降级）；④ 墨刀产物（离线包/预览链接/MCP 生成产物，均走方式2 通道）。
   生成前与用户确认目标位置、技术栈、代码规范、参考项目
   与页面范围——目标位置已有项目时自动探测并沿用其规范，新项目按场景给出选型推荐；参考项目支持
@@ -240,7 +240,7 @@ Step 7 交付总结（页面↔路由映射、mock 说明、待确认清单、�
 
 以下同系列技能为作者的其他作品，**未安装时相关引导自动跳过**，不影响主流程。
 
-- `pencil-designer`：负责**做设计**（创建/修改 .pen、驱动 Figma/墨刀 MCP 的写侧、导出原型 HTML）。本技能只**读**设计出代码，不写回任何设计工具。用户要改设计时引导其使用 pencil-designer，改完再回来重新生成
+- `prototype-designer`（原 pencil-designer）：负责**做设计**（创建/修改 .pen、驱动 Figma/墨刀 MCP 的写侧、导出原型 HTML）。本技能只**读**设计出代码，不写回任何设计工具。用户要改设计时引导其使用 prototype-designer，改完再回来重新生成
 - `prototypes-spec`：把原型转**文档**（PRD/功能清单/测试用例）。本技能把原型转**代码**。用户同时要文档和代码时，可先跑 prototypes-spec 出 PRD，再以该 PRD + 原型走本技能方式2
 - `requirement-analysis`：需求澄清。本技能 Step 3.1 的待确认项如果太多（>10 条），建议用户先做需求澄清再生成
 

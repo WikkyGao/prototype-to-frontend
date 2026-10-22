@@ -2,14 +2,14 @@
 
 从设计原型生成可运行的前端真实代码。遵循 **Agent Skills 开放格式**（`SKILL.md` + frontmatter），可被主流编码 Agent 加载，已在下方兼容性表中列出验证过的技能目录。
 
-**版本**：v0.8.1 · **语言**：中文为主
+**版本**：v0.9.0 · **语言**：中文为主
 
 ## 它做什么
 
 四种输入方式，统一产出「设计意图」后生成真实前端工程：
 
 1. **`.pen` 设计文件**（pen.dev）—— 经 pen CLI 的 MCP 读取节点树、交互 context、设计变量，`TakeScreenshot` 出视觉基线
-2. **PRD + 可交互 HTML 原型** —— 支持 pencil-designer 导出的三栏原型、墨刀离线演示包、Axure 等通用原型目录；Playwright 渲染出基线截图
+2. **PRD + 可交互 HTML 原型** —— 支持 prototype-designer 导出的三栏原型、墨刀离线演示包、Axure 等通用原型目录；Playwright 渲染出基线截图
 3. **Figma 文件** —— MCP 读侧优先（`get_metadata`/`get_variable_defs`/`get_design_context`/`get_screenshot`），REST API 兜底；席位限流自动探测降级（只读，不写回）
 4. **墨刀（MockingBot）产物** —— 离线演示包 / 预览链接 / MCP 生成产物，均走方式2 通道
 
@@ -79,11 +79,15 @@ prototype-to-frontend/
 
 - **OpenDesign 支持（规划中）** —— 开源 Agent 驱动设计工作区；待明确其产物形态与本技能的分工后评估。当前若有 OpenDesign 产物，可导出 HTML 后走方式2。
 
+## 更新日志
+
+- **v0.9.0（2026-10-22）** — `.pen` 读取对齐 pen CLI 0.3.12（`get_app_state()` 无参、`read_skill` 取 schema、execute 带 `description`）；同目录 `tokens.json` / `variables.css` / `design.md` 与 `components.json` 作为令牌、组件补充；方式2 优先解析 prototype-designer 的 `#prototype-manifest` 与 `data-page` / `data-route` / `data-context`，三栏外观识别降为兜底；文档统一使用 prototype-designer 新名。
+
 ## 相关技能（作者同系列，可选）
 
 未安装时不影响本技能主流程，相关引导会自动跳过。
 
-- **pencil-designer** — .pen 设计文件的制作与修改（本技能只读不写设计）
+- **prototype-designer**（原 pencil-designer）— .pen 设计文件的制作与修改（本技能只读不写设计）
 - **prototypes-spec** — 原型转开发文档（PRD/功能清单/测试用例）
 - **darwin-skill** — 技能评估与持续优化（本技能经其 8 维度 rubric 评估，full_test 85.8）
 

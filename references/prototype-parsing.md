@@ -3,7 +3,7 @@
 输入材料：
 
 - **PRD**：md 文件（或用户直接粘贴的需求文本）
-- **HTML 原型**：可交互原型——常见为 pencil-designer 导出的三栏原型 HTML（`{名字}-prototype.html`），也可能是通用原型（单 html 文件或目录）
+- **HTML 原型**：可交互原型——常见为 prototype-designer 导出的三栏原型 HTML（`{名字}-prototype.html`），也可能是通用原型（单 html 文件或目录）
 
 两者缺一时先问用户：只有 PRD 没原型 → 让用户提供原型（没有原型无法做视觉基线与组件结构推断，只能生成粗糙骨架，需明说）；只有原型没 PRD → 按 prototypes-spec 的严格字段原则从原型提取，缺失项标待确认。
 
@@ -24,9 +24,42 @@
 
 ## 2. 原型类型识别
 
-读 HTML（原型是明文，可直接 Read/Grep）判断类型：
+读 HTML（原型是明文，可直接 Read/Grep）判断类型。**优先读取结构化元数据，视觉特征只作兜底。**
 
-### 2.1 pencil-designer 三栏原型（优先识别）
+### 2.1 结构化元数据（优先识别）
+
+prototype-designer v4.4.0+ 产出的原型内嵌了机器可读清单。先检查：
+
+```js
+const manifest = JSON.parse(
+  document.querySelector('#prototype-manifest')?.textContent || 'null'
+);
+```
+
+命中 `#prototype-manifest` 时，直接按清单建立设计意图，不再依赖三栏外观：
+
+| manifest 字段 | 设计意图 |
+|---|---|
+| `pages[].name` / `route` | 页面清单、建议路由 |
+| `pages[].selector` | 在该页面容器内提取 `structure` |
+| `pages[].contextCount` | 校验 `[data-context]` 数量是否完整 |
+| `shared` | 跨页公共组件 |
+| `tokensSource` | 设计令牌来源（`UI Design.html` 或 `design.pen variables`） |
+| `files` | 页面片段、规范、组件库、注册表路径 |
+
+同时按 DOM 属性抽取：
+
+- `section.page[data-page]` → 页面容器与唯一页面名
+- `[data-route]` → 路由
+- `[data-context]` → interactions / fields（JSON，含 `trigger` / `action`）
+- `[data-target]`（左栏导航）→ navigation
+- `[data-annotation-id]` → 标注与说明卡对应关系，补充 interaction 描述
+
+若用户给的是 `design-pages.html`（页面片段集合），同样按 `section.page[data-page][data-route]` 与 `[data-context]` 解析；页面清单以 DOM 为准。
+
+**只有未命中 manifest 时，才进入 2.2 的视觉特征识别。**
+
+### 2.2 prototype-designer 三栏原型（外观兜底）
 
 识别特征（命中任意 2 条即可判定）：
 
@@ -47,13 +80,13 @@
 
 三栏原型的**外壳**（导航栏、说明面板、拖拽把手）是评审工具，**不是产品 UI**，生成代码时剥离，只取预览区内容。
 
-### 2.2 通用 HTML 原型
+### 2.3 通用 HTML 原型
 
 - **单文件**：直接读 DOM，`<section>`/`class` 语义 + 文本内容 → structure；`onclick`/`<a href>`/表单元素 → interactions
 - **目录**（Axure 等导出包，特征 `data/document.js`、`resources/scripts/`）：页面清单 = 目录下 html 文件（排除 index/start 等壳页）；页面多或需要结构化解析时，可调用本地 `prototypes-spec` 技能的 `parse_axure.py` 拿页面树 JSON——但**生成代码最终仍以浏览器里的真实渲染为准**，解析 JSON 只用于页面清单和字段线索
 - **多张独立 html 页面**：按文件名排序作为页面清单，问用户确认顺序与归属
 
-### 2.3 严格字段原则（沿用 prototypes-spec）
+### 2.4 严格字段原则（沿用 prototypes-spec）
 
 1. 字段 label 必须出现在原型文本或 PRD 中，不臆想
 2. 字段类型从控件推断（"请选择"→下拉、"请输入"→输入框），推断不出标"待确认"
@@ -85,7 +118,7 @@ python3 -m http.server 4180 --directory <原型目录>
 | 原型渲染 DOM / 三栏预览区 | structure |
 | 水滴标注、onclick、PRD 功能需求 | interactions |
 | PRD 数据字典 + 原型控件推断 | fields |
-| 原型配色取样（主按钮/背景/文字色） | tokens |
+| `tokensSource` 指向的 `UI Design.html` / `tokens.json` / `variables.css` / `design.md`（其次才从原型配色取样） | tokens |
 | 顶栏/侧栏等跨页重复结构 | shared |
 | PRD 与原型冲突点、推断不出类型的字段 | ambiguous |
 | Playwright 截图 | baseline |

@@ -1,6 +1,6 @@
 # 方式3：从 Figma 文件提取设计意图
 
-> 边界：本技能**只读** Figma，不写回——写设计属于 pencil-designer / Figma MCP 写侧的领地；
+> 边界：本技能**只读** Figma，不写回——写设计属于 prototype-designer / Figma MCP 写侧的领地；
 > 仅当用户明确提出写回需求时另行讨论，默认拒绝混入。
 > 接入策略：MCP 优先（读侧四工具恰好覆盖设计意图），REST API 兜底。
 
