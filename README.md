@@ -2,7 +2,7 @@
 
 从设计原型生成可运行的前端真实代码。遵循 **Agent Skills 开放格式**（`SKILL.md` + frontmatter），可被主流编码 Agent 加载，已在下方兼容性表中列出验证过的技能目录。
 
-**版本**：v0.9.0 · **语言**：中文为主
+**版本**：v0.9.1 · **语言**：中文为主
 
 ## 它做什么
 
@@ -80,6 +80,8 @@ prototype-to-frontend/
 - **OpenDesign 支持（规划中）** —— 开源 Agent 驱动设计工作区；待明确其产物形态与本技能的分工后评估。当前若有 OpenDesign 产物，可导出 HTML 后走方式2。
 
 ## 更新日志
+
+- **v0.9.1（2026-10-22）** — 重新发布以同步 skillhub 版本记录，功能同 v0.9.0
 
 - **v0.9.0（2026-10-22）** — `.pen` 读取对齐 pen CLI 0.3.12（`get_app_state()` 无参、`read_skill` 取 schema、execute 带 `description`）；同目录 `tokens.json` / `variables.css` / `design.md` 与 `components.json` 作为令牌、组件补充；方式2 优先解析 prototype-designer 的 `#prototype-manifest` 与 `data-page` / `data-route` / `data-context`，三栏外观识别降为兜底；文档统一使用 prototype-designer 新名。
 

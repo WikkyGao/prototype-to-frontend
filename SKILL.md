@@ -2,7 +2,7 @@
 name: prototype-to-frontend
 slug: prototype-to-frontend
 displayName: prototype-to-frontend
-version: 0.9.0
+version: 0.9.1
 description: >
   从设计原型生成可运行的前端真实代码。四种输入方式：① .pen 设计文件（pen.dev，经 MCP 读取
   节点结构与交互 context，导出 HTML/截图作基线）；② PRD + 可交互 HTML 原型（含 prototype-designer
