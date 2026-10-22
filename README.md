@@ -9,7 +9,7 @@
 四种输入方式，统一产出「设计意图」后生成真实前端工程：
 
 1. **`.pen` 设计文件**（pen.dev）—— 经 pen CLI 的 MCP 读取节点树、交互 context、设计变量，`TakeScreenshot` 出视觉基线
-2. **PRD + 可交互 HTML 原型** —— 支持 prototype-designer 导出的三栏原型、墨刀离线演示包、Axure 等通用原型目录；Playwright 渲染出基线截图
+2. **PRD + 可交互 HTML 原型** —— 支持 prototype-designer 导出的三栏原型（优先解析内嵌 `#prototype-manifest` 与 `data-page` / `data-route` / `data-context`）、墨刀离线演示包、Axure 等通用原型目录；Playwright 渲染出基线截图
 3. **Figma 文件** —— MCP 读侧优先（`get_metadata`/`get_variable_defs`/`get_design_context`/`get_screenshot`），REST API 兜底；席位限流自动探测降级（只读，不写回）
 4. **墨刀（MockingBot）产物** —— 离线演示包 / 预览链接 / MCP 生成产物，均走方式2 通道
 
